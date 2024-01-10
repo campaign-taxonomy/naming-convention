@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Name Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .set {
+            width: 48%;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        select,
+        input[type="text"],
+        input[type="date"] {
+            width: 50%;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <p><center><div class="title"><h1>AMNET Campaign Taxonomy</h1></div></center></p>
+    <div class="container">
+        <div class="set">
+            <h2>Deal</h2>
+            <div id="dropdownsContainer1" class="form-group"></div>
+            <button onclick="generateNamingConvention(1)">Generate</button>
+            <div class="result" id="result1"></div>
+        </div>
+
+        <div class="set">
+            <h2>Insertion Order</h2>
+            <div id="dropdownsContainer2" class="form-group"></div>
+            <button onclick="generateNamingConvention(2)">Generate</button>
+            <div class="result" id="result2"></div>
+        </div>
+
+        <div class="set">
+            <h2>Line Item</h3>
+            <div id="dropdownsContainer3" class="form-group"></div>
+            <button onclick="generateNamingConvention(3)">Generate</button>
+            <div class="result" id="result3"></div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch column data for Set 1 from "Data List" tab
+            fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer1", "result1", "Deal");
+
+            // Fetch column data for Set 2 from "Copy Data List" tab
+            fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer2", "result2", "Insertion Order");
+
+            // Fetch column data for Set 2 from "Copy Data List" tab
+            fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer3", "result3", "Line Item");
+        });
+
+        // Fetch column names and dropdown options from Google Sheet
+        function fetchColumnData(sheetId, dropdownsContainerId, resultId, tabName) {
+            var spreadsheetId = "1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM";
+            var apiKey = "AIzaSyDAUct9hsLPtyFt89xzpNlXC4Lgrh1eusI";
+            var range = tabName + "!A1:Z"; // Assuming Z as the maximum column (you can adjust as needed)
+
+            var url = "https://sheets.googleapis.com/v4/spreadsheets/" + spreadsheetId + "/values/" + range + "?key=" + apiKey;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => populateInputs(data.values, dropdownsContainerId, resultId))
+                .catch(error => console.error("Error fetching column data:", error));
+        }
+
+        // Populate dropdowns and inputs
+        function populateInputs(columnData, dropdownsContainerId, resultId) {
+            var dropdownsContainer = document.getElementById(dropdownsContainerId);
+            dropdownsContainer.innerHTML = '';
+
+            columnData[0].forEach((columnName, columnIndex) => {
+                var formGroup = document.createElement("div");
+                formGroup.className = "form-group";
+
+                var label = document.createElement("label");
+                label.textContent = columnName + ":";
+                formGroup.appendChild(label);
+
+                var columnValues = columnData.slice(1).map(row => row[columnIndex]);
+                var distinctValues = [...new Set(columnValues.filter(Boolean))];
+
+                if (distinctValues.length > 0) {
+                    var select = document.createElement("select");
+                    select.id = "column" + (columnIndex + 1) + dropdownsContainerId;
+
+                    distinctValues.forEach(value => {
+                        var option = document.createElement("option");
+                        option.value = value;
+                        option.text = value;
+                        select.appendChild(option);
+                    });
+
+                    formGroup.appendChild(select);
+                } else {
+                    // Check if it's a date column
+                    if (columnName.toLowerCase().includes("date")) {
+                        var dateInput = document.createElement("input");
+                        dateInput.type = "date";
+                        dateInput.id = "column" + (columnIndex + 1) + dropdownsContainerId;
+                        formGroup.appendChild(dateInput);
+                    } else {
+                        var input = document.createElement("input");
+                        input.type = "text";
+                        input.id = "column" + (columnIndex + 1) + dropdownsContainerId;
+                        input.placeholder = "Enter value...";
+                        formGroup.appendChild(input);
+                    }
+                }
+
+                dropdownsContainer.appendChild(formGroup);
+            });
+        }
+
+        // Generate naming convention
+        function generateNamingConvention(setNumber) {
+            var namingConvention = "";
+
+            document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input").forEach(function (element) {
+                namingConvention += element.value || element.querySelector("input").value || "";
+                namingConvention += "_";
+            });
+
+            namingConvention = namingConvention.slice(0, -1);
+
+            document.getElementById("result" + setNumber).innerText = namingConvention;
+        }
+    </script>
+</body>
+
+</html>
