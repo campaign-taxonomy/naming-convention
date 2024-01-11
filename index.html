@@ -74,6 +74,23 @@
             padding: 10px;
             border: 1px solid #ccc;
             background-color: #f9f9f9;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        button.copy-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #337ab7;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -96,7 +113,7 @@
         </div>
 
         <div class="set">
-            <h2>Line Item</h3>
+            <h2>Line Item</h2>
             <div id="dropdownsContainer3" class="form-group"></div>
             <button onclick="generateNamingConvention(3)">Generate</button>
             <div class="result" id="result3"></div>
@@ -190,6 +207,27 @@
             namingConvention = namingConvention.slice(0, -1);
 
             document.getElementById("result" + setNumber).innerText = namingConvention;
+ // Function to copy text from a specified result box
+        function copyText(resultId) {
+            var resultElement = document.getElementById(resultId);
+
+            // Create a temporary textarea element to copy the text
+            var textarea = document.createElement("textarea");
+            textarea.value = resultElement.innerText;
+
+            // Append the textarea to the document
+            document.body.appendChild(textarea);
+
+            // Select the text within the textarea
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+
+            // Execute the copy command
+            document.execCommand("copy");
+
+            // Remove the temporary textarea
+            document.body.removeChild(textarea);
+            
         }
     </script>
 </body>
