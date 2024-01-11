@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Name Generator</title>
     <style>
+
+    #errorMessage {
+    display: none;
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+}
+
         body {
             font-family: Arial, sans-serif;
             background-color: #0f2d49;
@@ -15,13 +25,13 @@
         }
 
         .title {
-            text-align: center; /* Center align the title */
-            padding: 20px 0; /* Add some padding for better spacing */
+            text-align: center;
+            padding: 20px 0;
         }
 
         .title h1 {
             color: #f2f7f7;
-            margin: 0; /* Remove margin to avoid extra spacing */
+            margin: 0;
         }
 
         .page-container {
@@ -43,11 +53,11 @@
         }
 
         .set:nth-child(odd) {
-            background-color: #e7fafe; /* Set background color for odd sets */
+            background-color: #e7fafe;
         }
 
         .set:nth-child(even) {
-            background-color: #f4f4f4; /* Set background color for even sets */
+            background-color: #f4f4f4;
         }
 
         .set h2 {
@@ -67,13 +77,13 @@
             display: block;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #16537e; /* Set column label text color */
+            color: #16537e;
         }
 
         select,
         input[type="text"],
         input[type="date"] {
-            width: 100%; /* Adjusted width to fill the container */
+            width: 100%;
             padding: 8px;
             font-size: 14px;
         }
@@ -95,7 +105,7 @@
             background-color: #f9f9f9;
             flex-grow: 1;
             position: relative;
-	    color: #000000; /* Change text color to black */
+            color: #000000;
         }
 
         .button-container {
@@ -152,9 +162,7 @@
     </div>
 
     <script>
-
-
-  document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             // Fetch column data for Set 1 from "Data List" tab
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer1", "result1", "Deal");
 
@@ -165,12 +173,10 @@
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer3", "result3", "Line Item");
         });
 
-        // Fetch column names and dropdown options from Google Sheet
         function fetchColumnData(sheetId, dropdownsContainerId, resultId, tabName) {
             var spreadsheetId = "1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM";
             var apiKey = "AIzaSyDAUct9hsLPtyFt89xzpNlXC4Lgrh1eusI";
-            var range = tabName + "!A1:Z"; // Assuming Z as the maximum column (you can adjust as needed)
-
+            var range = tabName + "!A1:Z";
             var url = "https://sheets.googleapis.com/v4/spreadsheets/" + spreadsheetId + "/values/" + range + "?key=" + apiKey;
 
             fetch(url)
@@ -179,7 +185,6 @@
                 .catch(error => console.error("Error fetching column data:", error));
         }
 
-        // Populate dropdowns and inputs
         function populateInputs(columnData, dropdownsContainerId, resultId) {
             var dropdownsContainer = document.getElementById(dropdownsContainerId);
             dropdownsContainer.innerHTML = '';
@@ -208,7 +213,6 @@
 
                     formGroup.appendChild(select);
                 } else {
-                    // Check if it's a date column
                     if (columnName.toLowerCase().includes("date")) {
                         var dateInput = document.createElement("input");
                         dateInput.type = "date";
@@ -227,43 +231,57 @@
             });
         }
 
-        // Generate naming convention
         function generateNamingConvention(setNumber) {
-            var namingConvention = "";
+    var namingConvention = "";
+    var isEmpty = false;
 
-            document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input").forEach(function (element) {
-                namingConvention += element.value || element.querySelector("input").value || "";
-                namingConvention += "_";
-            });
+    var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
 
-            namingConvention = namingConvention.slice(0, -1);
-
-            document.getElementById("result" + setNumber).innerText = namingConvention;
+    elements.forEach(function (element) {
+        if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
+            isEmpty = true;
+            highlightField(element);
         }
+        namingConvention += element.value || element.querySelector("input").value || "";
+        namingConvention += "_";
+    });
 
+    if (isEmpty) {
+        showErrorMessage("Please fill in all fields before generating the naming convention.");
+        return;
+    }
 
-     // Function to copy text from a specified result box
+    namingConvention = namingConvention.slice(0, -1);
+
+    document.getElementById("result" + setNumber).innerText = namingConvention;
+}
+
+function showErrorMessage(message) {
+    alert(message);  // This is a temporary solution until we resolve the issue
+}
+
+function highlightField(element) {
+    // Add a red border to highlight the missing field
+    element.style.border = "2px solid red";
+
+    // Remove the border after 3 seconds (adjust the delay if needed)
+    setTimeout(function () {
+        element.style.border = "";
+    }, 3000);
+}
+
         function copyText(resultId) {
             var resultElement = document.getElementById(resultId);
-
-            // Create a temporary textarea element to copy the text
             var textarea = document.createElement("textarea");
             textarea.value = resultElement.innerText;
-
-            // Append the textarea to the document
             document.body.appendChild(textarea);
-
-            // Select the text within the textarea
             textarea.select();
             textarea.setSelectionRange(0, 99999);
-
-            // Execute the copy command
             document.execCommand("copy");
-
-            // Remove the temporary textarea
             document.body.removeChild(textarea);
         }
     </script>
+<div id="errorMessage"></div>
 </body>
 
 </html>
