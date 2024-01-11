@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Name Generator</title>
     <style>
-  body {
+        body {
             font-family: Arial, sans-serif;
-            background-color: #e1ebf4;
+            background-color: #0f2d49;
         }
 
         .title h1 {
-            color: #3366cc; /* Change this to the desired title color */
+            color: #f2f7f7;
         }
 
         .container {
@@ -23,23 +23,24 @@
             justify-content: space-between;
         }
 
-       .set {
+        .set {
             width: 48%;
-            background-color: #eeeeee; /* Change this to the desired set background color */
+            background-color: #e7fafe;
             padding: 20px;
             border: 1px solid #ccc;
             margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
-  
+
         .set h2 {
-            color: #644e08; /* Change this to the desired set title color */
-
-          }
-
+            color: #16537e;
+            margin-bottom: 10px;
+        }
 
         h2 {
             margin-bottom: 20px;
-
         }
 
         .form-group {
@@ -61,12 +62,13 @@
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 8px 16px;
+            font-size: 14px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            margin-bottom: 10px;
         }
 
         .result {
@@ -101,27 +103,36 @@
         <div class="set">
             <h2>Deal</h2>
             <div id="dropdownsContainer1" class="form-group"></div>
-            <button onclick="generateNamingConvention(1)">Generate</button>
-            <div class="result" id="result1"></div>
+            <div class="button-container">
+                <button onclick="generateNamingConvention(1)">Generate</button>
+                <div class="result" id="result1"></div>
+                <button class="copy-button" onclick="copyText('result1')">Copy</button>
+            </div>
         </div>
 
         <div class="set">
             <h2>Insertion Order</h2>
             <div id="dropdownsContainer2" class="form-group"></div>
-            <button onclick="generateNamingConvention(2)">Generate</button>
-            <div class="result" id="result2"></div>
+            <div class="button-container">
+                <button onclick="generateNamingConvention(2)">Generate</button>
+                <div class="result" id="result2"></div>
+                <button class="copy-button" onclick="copyText('result2')">Copy</button>
+            </div>
         </div>
 
         <div class="set">
             <h2>Line Item</h2>
             <div id="dropdownsContainer3" class="form-group"></div>
-            <button onclick="generateNamingConvention(3)">Generate</button>
-            <div class="result" id="result3"></div>
+            <div class="button-container">
+                <button onclick="generateNamingConvention(3)">Generate</button>
+                <div class="result" id="result3"></div>
+                <button class="copy-button" onclick="copyText('result3')">Copy</button>
+            </div>
         </div>
-
     </div>
 
     <script>
+
         document.addEventListener("DOMContentLoaded", function () {
             // Fetch column data for Set 1 from "Data List" tab
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer1", "result1", "Deal");
@@ -208,7 +219,7 @@
 
             document.getElementById("result" + setNumber).innerText = namingConvention;
         }
- // Function to copy text from a specified result box
+// Function to copy text from a specified result box
         function copyText(resultId) {
             var resultElement = document.getElementById(resultId);
 
@@ -228,9 +239,7 @@
 
             // Remove the temporary textarea
             document.body.removeChild(textarea);
-            
         }
     </script>
 </body>
-
 </html>
