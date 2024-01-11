@@ -243,7 +243,7 @@
             highlightField(element);
         }
         namingConvention += element.value || element.querySelector("input").value || "";
-        namingConvention += "_";
+        namingConvention += " | ";
     });
 
     if (isEmpty) {
@@ -257,7 +257,14 @@
 }
 
 function showErrorMessage(message) {
-    alert(message);  // This is a temporary solution until we resolve the issue
+    var errorMessageContainer = document.getElementById("errorMessage");
+    errorMessageContainer.innerText = message;
+    errorMessageContainer.style.display = "block";
+
+    // Hide the error message after 10 seconds (adjust the delay if needed)
+    setTimeout(function () {
+        errorMessageContainer.style.display = "none";
+    }, 10000);
 }
 
 function highlightField(element) {
