@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Name Generator</title>
     <style>
-
-    #errorMessage {
-    display: none;
-    background-color: #f44336;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    margin-top: 10px;
-}
+        #errorMessage {
+            display: none;
+            background-color: #f44336;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+        }
 
         body {
             font-family: Arial, sans-serif;
@@ -122,10 +121,26 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
+        /* Add new styles for the logo */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo-container img {
+            width: 150px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
     </style>
 </head>
 
 <body>
+    <!-- Move logo container to the left corner -->
+    <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Dentsu-logo_black.svg" alt="Logo">
+    </div>
     <div class="title">
         <h1>AMNET Campaign Taxonomy</h1>
     </div>
@@ -160,6 +175,13 @@
             </div>
         </div>
     </div>
+
+    <!-- Add logo container at the right corner -->
+    <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Dentsu_logo.svg" alt="Logo">
+    </div>
+
+    <div id="errorMessage"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -232,50 +254,49 @@
         }
 
         function generateNamingConvention(setNumber) {
-    var namingConvention = "";
-    var isEmpty = false;
+            var namingConvention = "";
+            var isEmpty = false;
 
-    var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
+            var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
 
-    elements.forEach(function (element) {
-        if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
-            isEmpty = true;
-            highlightField(element);
+            elements.forEach(function (element) {
+                if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
+                    isEmpty = true;
+                    highlightField(element);
+                }
+                namingConvention += element.value || element.querySelector("input").value || "";
+                namingConvention += "_";
+            });
+
+            if (isEmpty) {
+                showErrorMessage("Please fill in all fields before generating the naming convention.");
+                return;
+            }
+
+            namingConvention = namingConvention.slice(0, -1);
+
+            document.getElementById("result" + setNumber).innerText = namingConvention;
         }
-        namingConvention += element.value || element.querySelector("input").value || "";
-        namingConvention += " | ";
-    });
 
-    if (isEmpty) {
-        showErrorMessage("Please fill in all fields before generating the naming convention.");
-        return;
-    }
+        function showErrorMessage(message) {
+            var errorMessageContainer = document.getElementById("errorMessage");
+            errorMessageContainer.innerText = message;
+            errorMessageContainer.style.display = "block";
 
-    namingConvention = namingConvention.slice(0, -1);
+            // Hide the error message after 3 seconds (adjust the delay if needed)
+            setTimeout(function () {
+                errorMessageContainer.style.display = "none";
+            }, 3000);
+        }
 
-    document.getElementById("result" + setNumber).innerText = namingConvention;
-}
+        function highlightField(element) {
+            element.style.border = "2px solid red";
 
-function showErrorMessage(message) {
-    var errorMessageContainer = document.getElementById("errorMessage");
-    errorMessageContainer.innerText = message;
-    errorMessageContainer.style.display = "block";
-
-    // Hide the error message after 10 seconds (adjust the delay if needed)
-    setTimeout(function () {
-        errorMessageContainer.style.display = "none";
-    }, 10000);
-}
-
-function highlightField(element) {
-    // Add a red border to highlight the missing field
-    element.style.border = "2px solid red";
-
-    // Remove the border after 3 seconds (adjust the delay if needed)
-    setTimeout(function () {
-        element.style.border = "";
-    }, 3000);
-}
+            // Remove the border after 3 seconds (adjust the delay if needed)
+            setTimeout(function () {
+                element.style.border = "";
+            }, 3000);
+        }
 
         function copyText(resultId) {
             var resultElement = document.getElementById(resultId);
@@ -288,7 +309,6 @@ function highlightField(element) {
             document.body.removeChild(textarea);
         }
     </script>
-<div id="errorMessage"></div>
 </body>
 
 </html>
