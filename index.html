@@ -1,6 +1,6 @@
- <!DOCTYPE html>
-<html lang="en">
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,7 +129,7 @@
         }
 
         .logo-container.left-logo img {
-            width: 100px;
+            width: 150px;
             height: auto;
         }
 
@@ -140,7 +140,7 @@
         }
 
         .logo-container.right-logo img {
-            width: 100px;
+            width: 150px;
             height: auto;
         }
     </style>
@@ -263,30 +263,33 @@
             });
         }
 
-        function generateNamingConvention(setNumber) {
-            var namingConvention = "";
-            var isEmpty = false;
+  function generateNamingConvention(setNumber) {
+    var namingConvention = "";
+    var isEmpty = false;
 
-            var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
+    var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
 
-            elements.forEach(function (element) {
-                if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
-                    isEmpty = true;
-                    highlightField(element);
-                }
-                namingConvention += element.value || element.querySelector("input").value || "";
-                namingConvention += " | ";
-            });
-
-            if (isEmpty) {
-                showErrorMessage("Please fill in all fields before generating the naming convention.");
-                return;
-            }
-
-            namingConvention = namingConvention.slice(0, -1);
-
-            document.getElementById("result" + setNumber).innerText = namingConvention;
+    elements.forEach(function (element, index, array) {
+        if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
+            isEmpty = true;
+            highlightField(element);
         }
+        namingConvention += element.value || element.querySelector("input").value || "";
+
+        // Check if it's not the last element before appending " | "
+        if (index < array.length - 1) {
+            namingConvention += " | ";
+        }
+    });
+
+    if (isEmpty) {
+        showErrorMessage("Please fill in all fields before generating the naming convention.");
+        return;
+    }
+
+    document.getElementById("result" + setNumber).innerText = namingConvention;
+}
+
 
         function showErrorMessage(message) {
             var errorMessageContainer = document.getElementById("errorMessage");
