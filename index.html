@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -122,25 +122,31 @@
             margin-top: 10px;
         }
 
-        /* Add new styles for the logo */
-        .logo-container {
+        .logo-container.left-logo {
             position: absolute;
             top: 20px;
             left: 20px;
         }
 
-        .logo-container img {
-            width: 150px; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
+        .logo-container.left-logo img {
+            width: 100px;
+            height: auto;
+        }
+
+        .logo-container.right-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .logo-container.right-logo img {
+            width: 100px;
+            height: auto;
         }
     </style>
 </head>
 
 <body>
-    <!-- Move logo container to the left corner -->
-    <div class="logo-container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Dentsu-logo_black.svg" alt="Logo">
-    </div>
     <div class="title">
         <h1>AMNET Campaign Taxonomy</h1>
     </div>
@@ -176,9 +182,13 @@
         </div>
     </div>
 
-    <!-- Add logo container at the right corner -->
-    <div class="logo-container">
+    <div class="logo-container left-logo">
         <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Dentsu_logo.svg" alt="Logo">
+    </div>
+
+    <!-- Right corner logo -->
+    <div class="logo-container right-logo">
+        <img src="https://www.displayce.com/wp-content/uploads/2016/04/Amnet.png" alt="Right Logo">
     </div>
 
     <div id="errorMessage"></div>
