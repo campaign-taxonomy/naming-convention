@@ -186,30 +186,17 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Dentsu_logo.svg" alt="Logo">
     </div>
 
-    <!-- Right corner logo -->
-    <div class="logo-container right-logo">
-        <img src="https://www.displayce.com/wp-content/uploads/2016/04/Amnet.png" alt="Right Logo">
-    </div>
-
-    <div id="errorMessage"></div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Fetch column data for Set 1 from "Data List" tab
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer1", "result1", "Deal");
-
-            // Fetch column data for Set 2 from "Copy Data List" tab
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer2", "result2", "Insertion Order");
-
-            // Fetch column data for Set 2 from "Copy Data List" tab
             fetchColumnData("1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM", "dropdownsContainer3", "result3", "Line Item");
         });
 
         function fetchColumnData(sheetId, dropdownsContainerId, resultId, tabName) {
-            var spreadsheetId = "1Pmtwk6WfEHq-BTi0rP7BHvan1awHSi8iv0otZeEd6hM";
-            var apiKey = "AIzaSyDAUct9hsLPtyFt89xzpNlXC4Lgrh1eusI";
-            var range = tabName + "!A1:Z";
-            var url = "https://sheets.googleapis.com/v4/spreadsheets/" + spreadsheetId + "/values/" + range + "?key=" + apiKey;
+            const apiKey = "AIzaSyDAUct9hsLPtyFt89xzpNlXC4Lgrh1eusI";
+            const range = tabName + "!A1:Z";
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
 
             fetch(url)
                 .then(response => response.json())
@@ -218,110 +205,113 @@
         }
 
         function populateInputs(columnData, dropdownsContainerId, resultId) {
-            var dropdownsContainer = document.getElementById(dropdownsContainerId);
+            const dropdownsContainer = document.getElementById(dropdownsContainerId);
             dropdownsContainer.innerHTML = '';
 
             columnData[0].forEach((columnName, columnIndex) => {
-                var formGroup = document.createElement("div");
+                const formGroup = document.createElement("div");
                 formGroup.className = "form-group";
 
-                var label = document.createElement("label");
+                const label = document.createElement("label");
                 label.textContent = columnName + ":";
                 formGroup.appendChild(label);
 
-                var columnValues = columnData.slice(1).map(row => row[columnIndex]);
-                var distinctValues = [...new Set(columnValues.filter(Boolean))];
+                const columnValues = columnData.slice(1).map(row => row[columnIndex]);
+                const distinctValues = [...new Set(columnValues.filter(Boolean))];
 
                 if (distinctValues.length > 0) {
-                    var select = document.createElement("select");
-                    select.id = "column" + (columnIndex + 1) + dropdownsContainerId;
-
+                    const select = document.createElement("select");
+                    select.id = `column${columnIndex + 1}${dropdownsContainerId}`;
                     distinctValues.forEach(value => {
-                        var option = document.createElement("option");
+                        const option = document.createElement("option");
                         option.value = value;
                         option.text = value;
                         select.appendChild(option);
                     });
-
                     formGroup.appendChild(select);
+                } else if (columnName.toLowerCase().includes("date")) {
+                    const dateInput = document.createElement("input");
+                    dateInput.type = "date";
+                    dateInput.id = `column${columnIndex + 1}${dropdownsContainerId}`;
+                    formGroup.appendChild(dateInput);
                 } else {
-                    if (columnName.toLowerCase().includes("date")) {
-                        var dateInput = document.createElement("input");
-                        dateInput.type = "date";
-                        dateInput.id = "column" + (columnIndex + 1) + dropdownsContainerId;
-                        formGroup.appendChild(dateInput);
-                    } else {
-                        var input = document.createElement("input");
-                        input.type = "text";
-                        input.id = "column" + (columnIndex + 1) + dropdownsContainerId;
-                        input.placeholder = "Enter value...";
-                        formGroup.appendChild(input);
-                    }
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.id = `column${columnIndex + 1}${dropdownsContainerId}`;
+                    input.placeholder = "Enter value...";
+                    formGroup.appendChild(input);
                 }
 
                 dropdownsContainer.appendChild(formGroup);
             });
         }
 
-  function generateNamingConvention(setNumber) {
-    var namingConvention = "";
-    var isEmpty = false;
+        function generateNamingConvention(setNumber) {
+            let namingConvention = "";
+            let isEmpty = false;
 
-    var elements = document.querySelectorAll("#dropdownsContainer" + setNumber + " select, #dropdownsContainer" + setNumber + " input");
+            const elements = document.querySelectorAll(`#dropdownsContainer${setNumber} select, #dropdownsContainer${setNumber} input`);
 
-    elements.forEach(function (element, index, array) {
-        if (!element.value && (!element.querySelector("input") || !element.querySelector("input").value)) {
-            isEmpty = true;
-            highlightField(element);
+            elements.forEach((element, index) => {
+                let value = "";
+
+                if (element.type === "date" && element.value) {
+                    const dateObj = new Date(element.value);
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    const month = dateObj.toLocaleString('default', { month: 'short' });
+                    value = `${day}-${month}`;
+                } else {
+                    value = element.value;
+                }
+
+                if (!value) {
+                    isEmpty = true;
+                    highlightField(element);
+                }
+
+                namingConvention += value;
+
+                if (index < elements.length - 1) {
+                    namingConvention += " | ";
+                }
+            });
+
+            if (isEmpty) {
+                showErrorMessage("Please fill in all fields before generating the naming convention.");
+                return;
+            }
+
+            document.getElementById(`result${setNumber}`).innerText = namingConvention;
         }
-        namingConvention += element.value || element.querySelector("input").value || "";
-
-        // Check if it's not the last element before appending " | "
-        if (index < array.length - 1) {
-            namingConvention += " | ";
-        }
-    });
-
-    if (isEmpty) {
-        showErrorMessage("Please fill in all fields before generating the naming convention.");
-        return;
-    }
-
-    document.getElementById("result" + setNumber).innerText = namingConvention;
-}
-
 
         function showErrorMessage(message) {
-            var errorMessageContainer = document.getElementById("errorMessage");
+            const errorMessageContainer = document.getElementById("errorMessage") || createErrorMessage();
             errorMessageContainer.innerText = message;
             errorMessageContainer.style.display = "block";
+            setTimeout(() => errorMessageContainer.style.display = "none", 3000);
+        }
 
-            // Hide the error message after 3 seconds (adjust the delay if needed)
-            setTimeout(function () {
-                errorMessageContainer.style.display = "none";
-            }, 3000);
+        function createErrorMessage() {
+            const div = document.createElement("div");
+            div.id = "errorMessage";
+            document.body.insertBefore(div, document.body.firstChild);
+            return div;
         }
 
         function highlightField(element) {
             element.style.border = "2px solid red";
-
-            // Remove the border after 3 seconds (adjust the delay if needed)
-            setTimeout(function () {
-                element.style.border = "";
-            }, 3000);
+            setTimeout(() => element.style.border = "", 3000);
         }
 
         function copyText(resultId) {
-            var resultElement = document.getElementById(resultId);
-            var textarea = document.createElement("textarea");
+            const resultElement = document.getElementById(resultId);
+            const textarea = document.createElement("textarea");
             textarea.value = resultElement.innerText;
             document.body.appendChild(textarea);
             textarea.select();
-            textarea.setSelectionRange(0, 99999);
             document.execCommand("copy");
             document.body.removeChild(textarea);
         }
     </script>
 </body>
-
 </html>
